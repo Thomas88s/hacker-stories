@@ -21,8 +21,7 @@ import React from 'react';
  ];
 
  
- function App() {
-   return (
+ const App = () => (
      <div>
        <h1>My Hacker Stories</h1>
 
@@ -30,23 +29,21 @@ import React from 'react';
        <input id="search" type="text" />
 
        <hr />
-
-       {list.map(function(item) {
-         return (
-         <div key={item.objectID}>
-           <span>
-             <a href={item.url}>{item.title}</a>
-           </span>
-           <span>{item.author}</span>
-           <span>{item.num_comments}</span>
-           <span>{item.points}</span>
-           {item.title}
-         </div>
-         );
-       })}
+       <List />
      </div>
    );
- }
 
+ const List = () => 
+    list.map(item => (
+        <div key={item.objectID}>
+          <span>
+            <a href={item.url}>{item.title}</a>
+          </span>
+          <span>{item.author}</span>
+          <span>{item.num_comments}</span>
+          <span>{item.points}</span>
+        </div>
+      ));
+ 
 
  export default App;
