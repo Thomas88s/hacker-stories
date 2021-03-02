@@ -1,7 +1,8 @@
 
 import React from 'react';
 
- const list = [
+const App = () => {
+ const stories = [
    {
      title: 'React',
      url: 'https://react.js.org',
@@ -20,30 +21,41 @@ import React from 'react';
    },
  ];
 
+ const [searchTerm, setSearchTerm] = React.useState('');
  
- const App = () => (
+   const handleChange = event => {
+     setSearchTerm(event.target.value);
+   };
+
+   return (
      <div>
        <h1>My Hacker Stories</h1>
 
        <label htmlFor="search">Search: </label>
-       <input id="search" type="text" />
+       <input id="search" type="text" onChange={handleChange} />
+
+       <p>
+         Searching for <strong>{searchTerm}</strong>
+       </p>
 
        <hr />
-       <List />
+
+       <List list={stories} />
      </div>
    );
+ };
 
- const List = () => 
-    list.map(item => (
-        <div key={item.objectID}>
-          <span>
-            <a href={item.url}>{item.title}</a>
-          </span>
-          <span>{item.author}</span>
-          <span>{item.num_comments}</span>
-          <span>{item.points}</span>
-        </div>
-      ));
+ const List = props => 
+    props.list.map(item => (
+   <div key={item.objectID}>
+     <span>
+       <a href={item.url}>{item.title}</a>
+     </span>
+     <span>{item.author}</span>
+     <span>{item.num_comments}</span>
+     <span>{item.points}</span>
+   </div>
+ ));
  
 
  export default App;
