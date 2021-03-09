@@ -1,6 +1,25 @@
 
 import React from 'react';
 
+const initialStories = [
+  {
+    title: 'React',
+    url: 'https://react.js.org',
+    author: 'Jordan Walk',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
+
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
@@ -15,29 +34,20 @@ const useSemiPersistentState = (key, initialState) => {
 
 
 const App = () => {
- const stories = [
-   {
-     title: 'React',
-     url: 'https://react.js.org',
-     author: 'Jordan Walk',
-     num_comments: 3,
-     points: 4,
-     objectID: 0,
-   },
-   {
-     title: 'Redux',
-     url: 'https://redux.js.org/',
-     author: 'Dan Abramov, Andrew Clark',
-     num_comments: 2,
-     points: 5,
-     objectID: 1,
-   },
- ];
-
  const [searchTerm, setSearchTerm] = useSemiPersistentState(
    'search',
    'React'
  );
+
+ const [stories, setStories] = React.useState(initialStories);
+
+ const handleRemoveStory = item => {
+   const newStories = stories.filter(
+     story => item.objectId !== story.objectId
+   );
+
+   setStories(newStories);
+ };
 
  const handleSearch = event => {
    setSearchTerm(event.target.value);
@@ -55,53 +65,63 @@ const App = () => {
          id="search"
          label="Search"
          value={searchTerm}
+         isFocused
          onInputChange={handleSearch}
-       />
+       >
+         <p>this is a test of the system</p>
+         <strong>Search:</strong>
+         </InputWithLabel>
 
        <hr />
 
-       <List list={searchedStories} />
+       <List list={searchedStories} onRemoveItem={handleRemoveStory} />
      </div>
    );
  };
 
  const InputWithLabel = ({ 
-   id, 
-   label, 
+   id,  
    value, 
    type = 'text',
-   onInputChange
-  }) => (
+   onInputChange,
+   isFocused,
+   children,
+  }) => {
+    const inputRef = React.useRef();
+
+    React.useEffect(() => {
+      if(isFocused && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [isFocused]);
+
+  return (
    <>
-     <label htmlFor={id}>{label}</label>
+     <label htmlFor={id}>{children}</label>
      &nbsp;
      <input
+     ref={inputRef}
        id={id}
        type={type}
        value={value}
+       autoFocus={isFocused}
        onChange={onInputChange}
        />
    </>
- );       
+   );     
+  };
 
-
- const Search = ({ search, onSearch }) => (
-      <>
-       <label htmlFor="search">Search: </label>
-       <input 
-         id="search" 
-         type="text" 
-         value={search}
-         onChange={onSearch} 
-       />
-      </>
- ); 
- 
-
- const List = ({ list }) => 
-    list.map(item  => <Item key={item.objectID} item={item} />);
   
- const Item = ({ item }) => (
+ const List = ({ list, onRemoveItem }) => 
+    list.map(item  => (
+    <Item
+     key={item.objectID}
+      item={item}
+      onRemoveItem={onRemoveItem}
+      />
+    ));
+  
+ const Item = ({ item, onRemoveItem }) => (
    <div>
      <span>
        <a href={item.url}>{item.title}</a>
@@ -109,6 +129,11 @@ const App = () => {
      <span>{item.author}</span>
      <span>{item.num_comments}</span>
      <span>{item.points}</span>
+     <span>
+       <button type="button" onClick={onRemoveItem.bind(null, item)}>
+         Dismiss
+       </button>
+     </span>
    </div>
  );
  
